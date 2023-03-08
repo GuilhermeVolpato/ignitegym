@@ -56,7 +56,7 @@ export function AppRoutes() {
         component={History}
         options={{
           tabBarIcon: ({ color }) => (
-            <HistorySvg fill={color} width={iconSize} height={iconSize} />
+            <HistorySvg fill={color} width={iconSize} height={iconSize}/>
           ),
         }}
       />
