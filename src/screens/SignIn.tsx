@@ -1,6 +1,7 @@
 
 import React from 'react'
 import { VStack, Image, Text, Center, Heading, ScrollView} from 'native-base'
+import { useForm, Controller } from "react-hook-form";
 
 import LogoSvg from '@assets/logo.svg'
 import BackgroundImg from '@assets/background.png'
