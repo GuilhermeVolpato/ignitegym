@@ -13,11 +13,22 @@ import { AuthNavigatorRoutesProps } from '@routes/auth.routes'
 
 import { useNavigation } from '@react-navigation/native'
 
+type FormData = {
+  email: string;
+  password: string;
+}
+
 export function SignIn() {
   const navigation = useNavigation<AuthNavigatorRoutesProps>();
 
+  const { control, handleSubmit, formState: { errors } } = useForm<FormData>()
+
   function handleNewAccount(){
     navigation.navigate('SignUp')
+  }
+
+  function handleSignIn({ email, password }: FormData){
+    console.log(email, password)
   }
 
   return (
@@ -44,19 +55,36 @@ export function SignIn() {
             Acesse sua conta
           </Heading>
 
-          <Input
-            placeholder='E-mail'
-            keyboardType='email-address'
-            autoCapitalize='none'
-          />
-          <Input
-            placeholder='Senha'
-            secureTextEntry
+          <Controller 
+            control={control}
+            name="email"
+            rules={{ required: 'Informe o e-mail' }}
+            render={({ field: { onChange } }) => (
+              <Input 
+                placeholder="E-mail" 
+                keyboardType="email-address"
+                autoCapitalize="none"
+                onChangeText={onChange}
+                errorMesage={errors.email?.message}
+              />
+            )}
           />
 
-          <Button
-            title='Acessar'
+          <Controller 
+            control={control}
+            name="password"
+            rules={{ required: 'Informe a senha' }}
+            render={({ field: { onChange } }) => (
+              <Input 
+                placeholder="Senha" 
+                secureTextEntry
+                onChangeText={onChange}
+                errorMesage={errors.password?.message}
+              />
+            )}
           />
+          
+        <Button title="Acessar" onPress={handleSubmit(handleSignIn)} />
 
         </Center>
 

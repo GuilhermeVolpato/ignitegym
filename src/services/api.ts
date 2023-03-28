@@ -4,7 +4,7 @@ import { AppError } from "@utils/AppError";
 
 const api = axios.create({
   baseURL: "http://localhost:3333",
-  timeout: 6000,
+  timeout: 4000,
 });
 
 api.interceptors.response.use((response) => response, (error) => {
