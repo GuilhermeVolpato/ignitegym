@@ -2,6 +2,7 @@
 
 Em andamento!
 
+/////////
 
 Terminado Módulo 4 Context API
 
@@ -15,8 +16,7 @@ Falta ainda:
 
 8- Refresh Token
 
-
-
+/////////
 
 Para rodar o projeto, é necessário subir o backend,
 
@@ -25,6 +25,6 @@ https://github.com/rodrigorgtic/ignitegym-api
 
 porta: 3333
 
-
+/////////
 
 rodar no terminal: npm run dev
