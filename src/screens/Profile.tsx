@@ -9,12 +9,14 @@ import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { useAuth } from "@hooks/useAuth";
+
 const PHOTO_SIZE = 33;
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string>("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS785biEGWYfQ3kCbvts_QRuNPn7IJpvovN4A&usqp=CAU");
-
+  const { user } = useAuth();
   const toast = useToast();
 
   async function handleUserPhotoSelect(){
@@ -90,7 +92,7 @@ export function Profile() {
             bg='gray.600'
           />
           <Input
-            placeholder="E-mail"
+            placeholder={user.email}
             bg='gray.600'
             isDisabled
           />
