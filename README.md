@@ -16,11 +16,15 @@ Falta ainda:
 8- Refresh Token
 
 
+
+
 Para rodar o projeto, é necessário subir o backend,
 
 Conexão com backend:
 https://github.com/rodrigorgtic/ignitegym-api
 
 porta: 3333
+
+
 
 rodar no terminal: npm run dev
