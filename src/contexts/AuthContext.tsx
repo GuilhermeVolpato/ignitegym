@@ -1,8 +1,18 @@
 import { UserDTO } from "@dtos/UserDTO";
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { api } from "@services/api";
-import { storageUserSaver, storageUserGet, storageUserRemove } from "@storage/storageUser";
-import { storageAuthTokenSaver, storageAuthTokenGet } from "@storage/storageAuthToken";
+
+import {
+  storageUserSaver,
+  storageUserGet,
+  storageUserRemove,
+} from "@storage/storageUser";
+
+import {
+  storageAuthTokenSave,
+  storageAuthTokenGet,
+  storageAuthTokenRemove,
+} from "@storage/storageAuthToken";
 
 export type AuthContextDataProps = {
   user: UserDTO;
@@ -15,27 +25,32 @@ type AuthContextProviderProps = {
   children: ReactNode;
 };
 
-export const AuthContext = createContext<AuthContextDataProps>( {} as AuthContextDataProps );
+export const AuthContext = createContext<AuthContextDataProps>(
+  {} as AuthContextDataProps
+);
 
 export function AuthContextProvider({ children }: AuthContextProviderProps) {
   const [user, setUser] = useState<UserDTO>({} as UserDTO);
   const [isLoadingUserStorageData, setIsLoadingUserStorageData] = useState(true);
 
-  async function userAndTokenUptade(userData: UserDTO, token: string) {
-    try {
-
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      setUser(user);
-
+  async function userAndTokenUptade(userData: UserDTO, token: string) { // para poder usar a logica em mais de um lugar e
+    try {                                                               //passar o token nas requisições (ATUALIZA O TOKEN e usuário)
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`; //Token de autenticação anexado nas requisições
+      setUser(userData);
     } catch (error) {
-
       throw error;
+    }
+  }
 
-    } finally {
-
+  async function storageUserAndTokenSave(userData: UserDTO, token: string){
+    try{
+      setIsLoadingUserStorageData(true);
+      await storageUserSaver(userData);
+      await storageAuthTokenSave(token);
+    }catch(error){
+      throw error;
+    }finally{
       setIsLoadingUserStorageData(false);
-
     }
   }
 
@@ -44,10 +59,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       const { data } = await api.post("/sessions", { email, password });
 
       if (data.user && data.token) {
-        setIsLoadingUserStorageData(true);
-
-        await storageUserSaver(data.user);
-        await storageAuthTokenSaver(data.token);
+        await storageUserAndTokenSave(data.user, data.token)
 
         userAndTokenUptade(data.user, data.token);
       }
@@ -62,7 +74,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {
       setIsLoadingUserStorageData(true);
       setUser({} as UserDTO);
+      console.log("user da função signOUT ==>", user);
       await storageUserRemove();
+      await storageAuthTokenRemove();
     } catch (error) {
       throw error;
     } finally {
@@ -73,16 +87,16 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   async function loadUser() {
     try {
       setIsLoadingUserStorageData(true);
-      const userLogged = await storageUserGet();
-      const token = await storageAuthTokenGet();
+      const userLogged = await storageUserGet(); // busca o usuario no storage, se tiver dado, o usuario ta logado
+      const token = await storageAuthTokenGet(); // busca o token no storage, se tiver dado, o usuario ta logado
 
       if (token && userLogged) {
         userAndTokenUptade(userLogged, token);
+        console.log("user da função loadUser ==>", token, userLogged);
       }
-
     } catch (error) {
       throw error;
-    } 
+    }
   }
 
   useEffect(() => {
@@ -90,7 +104,9 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, signIn, isLoadingUserStorageData, signOut }}>
+    <AuthContext.Provider
+      value={{ user, signIn, isLoadingUserStorageData, signOut }}
+    >
       {children}
     </AuthContext.Provider>
   );

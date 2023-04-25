@@ -17,9 +17,9 @@ export function Routes() {
 
   console.log(user);
 
-  if (isLoadingUserStorageData) {
-    return <Loading/>;
-  }
+  // if (isLoadingUserStorageData) {
+  //   return <Loading/>;
+  // }
   
   return (
     <Box flex={1} bg="gray.700">
