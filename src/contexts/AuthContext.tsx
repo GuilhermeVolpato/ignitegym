@@ -37,6 +37,7 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
     try {                                                               //passar o token nas requisições (ATUALIZA O TOKEN e usuário)
       api.defaults.headers.common["Authorization"] = `Bearer ${token}`; //Token de autenticação anexado nas requisições
       setUser(userData);
+      console.log("userData  DA userAndTokenUptade" , userData);
     } catch (error) {
       throw error;
     }
@@ -59,6 +60,8 @@ export function AuthContextProvider({ children }: AuthContextProviderProps) {
       const { data } = await api.post("/sessions", { email, password });
 
       if (data.user && data.token) {
+        console.log("user da função signIn ==>", data.user,)
+        console.log("token da função signIn ==>", data.token,)
         await storageUserAndTokenSave(data.user, data.token)
 
         userAndTokenUptade(data.user, data.token);
