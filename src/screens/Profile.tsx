@@ -9,15 +9,32 @@ import { UserPhoto } from "@components/UserPhoto";
 import { Input } from "@components/Input";
 import { Button } from "@components/Button";
 
+import { Controller, useForm } from "react-hook-form";
+
 import { useAuth } from "@hooks/useAuth";
 
 const PHOTO_SIZE = 33;
+
+type FormDataProps = {
+  name: string;
+  email: string;
+  password: string;
+  oldPassword: string;
+  passwordConfirm: string;
+}
 
 export function Profile() {
   const [photoIsLoading, setPhotoIsLoading] = useState(false);
   const [userPhoto, setUserPhoto] = useState<string>("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS785biEGWYfQ3kCbvts_QRuNPn7IJpvovN4A&usqp=CAU");
   const { user } = useAuth();
   const toast = useToast();
+
+  const { control } = useForm({
+    defaultValues: {
+      name: user.name,
+      email: user.email,
+    }
+  });
 
   async function handleUserPhotoSelect(){
     setPhotoIsLoading(true);
@@ -87,14 +104,31 @@ export function Profile() {
             </Text>
           </TouchableOpacity>
           
-          <Input
-            placeholder="Nome"
-            bg='gray.600'
+          <Controller
+            control={control}
+            name="name"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="Nome"
+                bg='gray.600'
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
           />
-          <Input
-            placeholder={user.email}
-            bg='gray.600'
-            isDisabled
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <Input
+                placeholder="E-mail"
+                bg='gray.600'
+                onChangeText={onChange}
+                value={value}
+                isDisabled
+              />
+            )}
           />
 
         </Center>

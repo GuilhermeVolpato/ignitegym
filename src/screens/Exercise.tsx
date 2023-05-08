@@ -32,7 +32,7 @@ type RouteParams = {
 
 export function Exercise() {
   const [isLoading, setIsLoading] = useState(true);
-  const [isRegistering, setIsRegistering] = useState(false);
+  const [sendingResgister, setSendingResgister] = useState(false);
   const navigation = useNavigation<AppNavigatorRoutesProps>();
   const route = useRoute();
   const { exerciseId } = route.params as RouteParams;
@@ -66,17 +66,26 @@ export function Exercise() {
 
   async function handleExerciseHistoryReister(){
     try{
+      setSendingResgister(true);
 
+      await api.post('/history', { exercise_id: exerciseId });
+      toast.show({
+        title: 'Exercício registrado com sucesso',
+        placement: 'top',
+        bgColor: 'green.700',
+      });
+
+      navigation.navigate('History');
     }catch(error){
       const isAppError = error instanceof AppError
-      const title = isAppError ? error.message : 'Não foi registrar o exercício';
+      const title = isAppError ? error.message : 'Não foi possível registrar o exercício';
       toast.show({
         title,
         placement: 'top',
         bgColor: 'red.500',
       });
     }finally{
-      setIsLoading(false);
+      setSendingResgister(false);
     }
   }
 
@@ -113,17 +122,18 @@ export function Exercise() {
         {
           isLoading ? <Loading/> :
           <VStack p={8}>
-            <Image
-              alt={`Imagem do exercício ${exercise.name}`}
-              h={80}
-              w="full"
-              mb={3}
-              resizeMode="cover"
-              rounded="lg"
-              source={{
-                uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
-              }}
-            />
+            <Box rounded={'lg'} mb={3} overflow={'hidden'}>
+              <Image
+                alt={`Imagem do exercício ${exercise.name}`}
+                h={80}
+                w="full"
+                resizeMode="cover"
+                rounded="lg"
+                source={{
+                  uri: `${api.defaults.baseURL}/exercise/demo/${exercise.demo}`,
+                }}
+              />
+            </Box>
             <Box bg="gray.600" rounded="md" pb={4} px={4}>
               <HStack
                 alignItems="center"
@@ -134,20 +144,23 @@ export function Exercise() {
                 <HStack>
                   <SeriesSvg />
                   <Text color="gray.200" ml={2}>
-                    {" "}
-                    3 séries
+                    {exercise.series} séries
                   </Text>
                 </HStack>
 
                 <HStack>
                   <RepetitionsSvg />
                   <Text color="gray.200" ml={2}>
-                    12 séries{" "}
+                    {exercise.repetitions} repetições
                   </Text>
                 </HStack>
               </HStack>
 
-              <Button title="Marcar como realizado" />
+              <Button 
+                title="Marcar como realizado" 
+                isLoading={sendingResgister}
+                onPress={handleExerciseHistoryReister}
+              />
             </Box>
           </VStack>
         }
